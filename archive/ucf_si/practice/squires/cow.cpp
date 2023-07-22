@@ -216,14 +216,14 @@ void solve() {
 
     rep(h, 0, horizontal.size()) {
         int i_h = 2 + h;
-        network.add_edge(0, i_h, INT_MAX);
+        network.add_edge(0, i_h, 1);
 
         rep(v, 0, vertical.size()) {
             int i_v = 2 + horizontal.size() + v;
-            if (h == 0) network.add_edge(i_v, 1, INT_MAX);
+            if (h == 0) network.add_edge(i_v, 1, 1);
 
             if (horizontal[h].intersects(vertical[v])) {
-                cout << "intersection at " << h << ", " << v << endl;
+//                cout << "intersection at " << h << ", " << v << endl;
                 network.add_edge(i_h, i_v, 1);
 //                network.add_edge(i_v, i_h, 1);
             }
@@ -232,8 +232,8 @@ void solve() {
 
     ll vertices = network.n;
     ll max_flow = network.max_flow(0, 1);
-    cout << "vertices " << vertices << endl;
-    cout << "max flow " << max_flow << endl;
+//    cout << "vertices " << vertices << endl;
+//    cout << "max flow " << max_flow << endl;
     cout << (n - max_flow) << endl;
 }
 
