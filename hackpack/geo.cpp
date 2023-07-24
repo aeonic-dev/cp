@@ -8,6 +8,20 @@ struct pt {
 
     pt(n_t x, n_t y) : x(x), y(y) {}
 
+    static pt polar(n_t theta, n_t r) {
+        return {r * cos(theta), r * sin(theta)};
+    }
+
+    friend std::istream &operator>>(std::istream &in, pt<n_t> &rhs) {
+        in >> rhs.x >> rhs.y;
+        return in;
+    }
+
+    friend std::ostream &operator<<(std::ostream &out, const pt<n_t> &rhs) {
+        out << rhs.x << " " << rhs.y;
+        return out;
+    }
+
     pt operator+(pt u) const {
         return {x + u.x, y + u.y};
     }
@@ -40,6 +54,7 @@ struct pt {
         return x * u.y - y * u.x;
     }
 
+    // Computes the cross product of (u - this vector) and (v - this vector), such as for area
     n_t cross(pt u, pt v) const {
         return (u - *this).cross(v - *this);
     }
@@ -52,14 +67,29 @@ struct pt {
         return std::sqrt(norm());
     }
 
+    n_t theta() {
+        return atan2(y, x);
+    }
+
     pt unit() const {
         n_t m = mag();
         return {x / m, y / m};
     }
 
+    pt midpoint(pt u) const {
+        return *this + (u - *this) / 2.0f;
+    }
+
     // Projects the vector u onto this vector
     pt project(pt u) const {
         return unit() * dot(u) / mag();
+    }
+
+    // Gets the unit vectors perpendicular to this one
+    std::pair<pt, pt> perp() {
+        n_t m = mag();
+        return {{y / m,  -x / m},
+                {-y / m, x / m}};
     }
 };
 
