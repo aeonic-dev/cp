@@ -67,7 +67,7 @@ struct pt {
         return std::sqrt(norm());
     }
 
-    n_t theta() {
+    n_t theta() const {
         return atan2(y, x);
     }
 
@@ -86,7 +86,7 @@ struct pt {
     }
 
     // Gets the unit vectors perpendicular to this one
-    std::pair<pt, pt> perp() {
+    std::pair <pt, pt> perp() const {
         n_t m = mag();
         return {{y / m,  -x / m},
                 {-y / m, x / m}};
@@ -94,22 +94,74 @@ struct pt {
 };
 
 template<typename n_t>
-struct segment {
+struct seg {
     pt<n_t> a, b;
 
-    pt<n_t> direction() const {
+    seg(const pt<n_t> &a, const pt<n_t> &b) : a(a), b(b) {}
+
+    static seg from(const pt<n_t> &start, const pt<n_t> &dir) {
+        return seg(start, start + dir);
+    }
+
+    pt<n_t> dir() const {
         return b - a;
     }
 
-    double distance(pt<n_t> v) {
-        auto u = direction();
+    n_t distance(pt<n_t> v) const {
+        auto u = dir();
         return std::abs(u.cross(v) / u.mag());
     }
 
-//    // Returns the intersection point or -1,-1 if there is none
-//    pt intersection(segment s) {
-//
-//    }
+
+    // Returns true if the segments intersect, and sets out to the intersection point
+    // https://stackoverflow.com/a/565282
+    bool intersection(const seg &o, pt<n_t> &out) const {
+        const pt<n_t> &p = a, &q = o.a;
+        pt<n_t> r = dir(), s = o.dir();
+
+        // If the segments intersect, there exist some t,u such that p + tr = q + us
+        n_t t = (q - p).cross(s) / r.cross(s);
+        n_t u = (q - p).cross(r) / r.cross(s);
+
+        if (r.cross(s) == 0) {
+            if ((q - p).cross(r) == 0) {
+                // Collinear
+                n_t t0 = (q - p).cross(r) / r.norm();
+                n_t t1 = t0 + s.dot(r) / r.norm();
+                if (t0 > t1) swap(t0, t1);
+
+                if (t0 >= 0 && t1 <= 0) {
+                    // Collinear, intersecting at [t0, t1]
+                    out = p + r * t0;
+                    return true;
+                }
+                if (t0 <= 0 && t1 >= 0) {
+                    // Collinear, intersecting at [0, min(1, t1)]
+                    out = p + r * min((n_t) 1, t1);
+                    return true;
+                }
+                if (t0 <= 1 && t1 >= 1) {
+                    // Collinear, intersecting at [max(0, t0), 1]
+                    out = p + r * max((n_t) 0, t0);
+                    return true;
+                }
+
+                // Collinear, not intersecting
+                return false;
+            }
+            // Parallel, not intersecting
+            return false;
+        }
+
+        if (0 <= t && t <= 1 && 0 <= u && u <= 1) {
+            // Not parallel, intersecting
+            out = p + r * t;
+            return true;
+        }
+
+        // Not parallel, not intersecting
+        return false;
+    }
 };
 
 // TODO: polygon; point in polygon (above/below cross with all segments that intersect)
