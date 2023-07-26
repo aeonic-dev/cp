@@ -138,7 +138,6 @@ struct pt {
     }
 };
 
-#define double long double
 typedef pt<double> dpt;
 dpt zero = {0, 0};
 
