@@ -46,6 +46,10 @@ struct pt {
         return sqrt(std::pow(x - u.x, 2) + std::pow(y - u.y, 2));
     }
 
+    n_t distance2(pt u) const {
+        return std::pow(x - u.x, 2) + std::pow(y - u.y, 2);
+    }
+
     n_t dot(pt u) const {
         return x * u.x + y * u.y;
     }
@@ -130,6 +134,7 @@ struct seg {
                 n_t t1 = t0 + s.dot(r) / r.norm();
                 if (t0 > t1) swap(t0, t1);
 
+                // TODO: Pick more consistent intersection points in collinear cases
                 if (t0 >= 0 && t1 <= 0) {
                     // Collinear, intersecting at [t0, t1]
                     out = p + r * t0;
@@ -163,6 +168,38 @@ struct seg {
         return false;
     }
 };
+
+// Finds the midpoints of both possible circles with diameter d whose circumferences contain the points u and v
+// Assumes that the points are *not* at a distance of d, in which case there is only one circle (check this yourself)
+template<typename n_t>
+std::pair<pt<n_t>, pt<n_t>> find_circles(pt<n_t> u, pt<n_t> v, n_t d, n_t eps = 1e-6) {
+    pt<n_t> mid = u.midpoint(v), dif = v - u;
+    n_t dist = u.distance(v);
+
+    std::pair <pt<n_t>, pt<n_t>> perp = dif.perp();
+    double h = std::sqrt(d * d / 4 - dist * dist / 4);
+    return {
+            mid + perp.first * h,
+            mid + perp.second * h
+    };
+}
+
+// Finds the midpoint and radius of a circle whose circumference contains the points a, b and c
+template<typename n_t>
+bool find_circle(pt<n_t> a, pt<n_t> b, pt<n_t> c, std::pair <pt<n_t>, n_t> &out, n_t ray_length = 1e5) {
+    pt<n_t> u = b - a, v = c - a;
+    if (u.cross(v) < 0) swap(u, v);
+
+    pt<n_t> m_u = u / 2, m_v = v / 2;
+    seg<n_t> h_u = seg<n_t>::from(m_u, u.perp().second * ray_length);
+    seg<n_t> h_v = seg<n_t>::from(m_v, v.perp().first * ray_length);
+
+    pt<n_t> mid;
+    if (!h_u.intersection(h_v, mid)) return false;
+
+    out = {mid, mid.distance(a)};
+    return true;
+}
 
 // TODO: polygon; point in polygon (above/below cross with all segments that intersect)
 
