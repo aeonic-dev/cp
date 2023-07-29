@@ -1,3 +1,4 @@
+// Templated point/vector impl for any numeric type.
 template<typename n_t>
 struct pt {
     n_t x, y;
@@ -42,6 +43,11 @@ struct pt {
         return x == u.x && y == u.y;
     }
 
+    bool operator<(const pt &u) const {
+        if (x != u.x) return x < u.x;
+        return y < u.y;
+    }
+
     n_t distance(pt u) const {
         return sqrt(std::pow(x - u.x, 2) + std::pow(y - u.y, 2));
     }
@@ -73,6 +79,10 @@ struct pt {
 
     n_t theta() const {
         return atan2(y, x);
+    }
+
+    n_t angle(pt u) {
+        return (u - *this).theta();
     }
 
     pt unit() const {
@@ -169,10 +179,17 @@ struct seg {
     }
 };
 
+// Returns the absolute area of the triangle formed by the points a, b and c
+template<typename n_t>
+n_t area(const pt<n_t> &a, const pt<n_t> &b, const pt<n_t> &c) {
+    pt<n_t> u = b - a, v = c - a;
+    return std::abs(u.cross(v)) / (n_t) 2;
+}
+
 // Finds the midpoints of both possible circles with diameter d whose circumferences contain the points u and v
 // Assumes that the points are *not* at a distance of d, in which case there is only one circle (check this yourself)
 template<typename n_t>
-std::pair<pt<n_t>, pt<n_t>> find_circles(pt<n_t> u, pt<n_t> v, n_t d, n_t eps = 1e-6) {
+std::pair <pt<n_t>, pt<n_t>> find_circles(pt<n_t> u, pt<n_t> v, n_t d, n_t eps = 1e-6) {
     pt<n_t> mid = u.midpoint(v), dif = v - u;
     n_t dist = u.distance(v);
 
@@ -201,9 +218,48 @@ bool find_circle(pt<n_t> a, pt<n_t> b, pt<n_t> c, std::pair <pt<n_t>, n_t> &out,
     return true;
 }
 
-// TODO: polygon; point in polygon (above/below cross with all segments that intersect)
-
+// Constructs a convex hull with the given points, returning them in counterclockwise order.
 template<typename n_t>
-double area(const pt<n_t> &a, const pt<n_t> &b, const pt<n_t> &c) {
-    return std::abs((b - a).cross(c - a)) / 2;
+std::vector <pt<n_t>> convex(std::vector <pt<n_t>> pts, double eps = 1e-9) {
+    if (pts.size() <= 1) return pts;
+
+    std::sort(pts.begin(), pts.end());
+    std::vector <pt<n_t>> hull(pts.size() + 1);
+
+    int s = 0, hull_size = 0;
+    for (int i = 2; i--; s = --hull_size, std::reverse(pts.begin(), pts.end())) {
+        for (auto &p: pts) {
+            while (hull_size >= s + 2 && hull[hull_size - 2].cross(hull[hull_size - 1], p) <= 0 + eps) hull_size--;
+            hull[hull_size++] = p;
+        }
+    }
+
+    return {
+            hull.begin(),
+            hull.begin() + hull_size - (hull_size == 2 && hull[0] == hull[1])
+    };
 }
+
+// Finds all antipodal pairs for the given hull with rotating calipers, assuming points in counterclockwise order.
+// Returns the biggest distance between any antipodal pair, or 0 if there are less than two points.
+template<typename n_t>
+n_t max_distance(const std::vector <pt<n_t>> &hull) {
+    if (hull.size() <= 1) return (n_t) 0;
+    if (hull.size() == 2) return hull[0].distance(hull[1]);
+
+    int n = hull.size();
+    int j = n >= 2;
+    n_t max_d2 = 0;
+
+    rep(i, 0, j)
+    {
+        for (;; j = (j + 1) % n) {
+            max_d2 = max(max_d2, hull[i].distance2(hull[j]));
+            if ((hull[(j + 1) % n] - hull[j]).cross(hull[i + 1] - hull[i]) >= 0) break;
+        }
+    }
+
+    return std::sqrt(max_d2);
+}
+
+// TODO: polygon; point in polygon (above/below cross with all segments that intersect)
