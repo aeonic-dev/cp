@@ -19,9 +19,7 @@ typedef long double ld;
 typedef unsigned char byte;
 typedef pair<int, int> pi;
 typedef pair<double, double> pd;
-typedef pair<li, li> pli;
 typedef pair<ll, ll> pll;
-typedef pair<ld, ld> pld;
 typedef vec<int> vi;
 typedef vec<li> vli;
 typedef vec<ll> vll;
@@ -46,14 +44,26 @@ template<typename T> istream &operator>>(istream &stream, T array[]) { for (auto
 // @formatter:on
 
 void solve() {
+    int r, c, k, tmp;
+    cin >> r >> c >> k;
+    vec<ll> num_per_row(r, 0);
+    rep(i, 0, c) {
+        cin >> tmp;
+        num_per_row[tmp - 1]++;
+    }
 
+    sort(rall(num_per_row));
+    ll num = 0;
+    rep(i, 0, min(r, k)) {
+        num += num_per_row[i];
+    }
+
+    cout << num << endl;
 }
 
 int main() {
     ios::sync_with_stdio(false); // Makes io faster, desyncs c-style io (no scanf/printf)
     //cin.tie(nullptr); // Unties cin from cout (don't do this if you alternate input/output)
 
-    int tests;
-    cin >> tests;
-    while (tests--) solve();
+    solve();
 }

@@ -19,9 +19,7 @@ typedef long double ld;
 typedef unsigned char byte;
 typedef pair<int, int> pi;
 typedef pair<double, double> pd;
-typedef pair<li, li> pli;
 typedef pair<ll, ll> pll;
-typedef pair<ld, ld> pld;
 typedef vec<int> vi;
 typedef vec<li> vli;
 typedef vec<ll> vll;
@@ -46,14 +44,25 @@ template<typename T> istream &operator>>(istream &stream, T array[]) { for (auto
 // @formatter:on
 
 void solve() {
+    ll n;
+    cin >> n;
 
+    if (n < 4) {
+        cout << n << endl;
+        return;
+    }
+
+    ll k = floor(sqrt(n));
+    ll moves = k * 2 - 1;
+    ll left = n - k * k;
+
+    if (left > 0) moves += ceil(left / (ld) k);
+    cout << moves;
 }
 
 int main() {
     ios::sync_with_stdio(false); // Makes io faster, desyncs c-style io (no scanf/printf)
     //cin.tie(nullptr); // Unties cin from cout (don't do this if you alternate input/output)
 
-    int tests;
-    cin >> tests;
-    while (tests--) solve();
+    solve();
 }

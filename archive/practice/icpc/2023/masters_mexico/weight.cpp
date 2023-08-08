@@ -19,9 +19,7 @@ typedef long double ld;
 typedef unsigned char byte;
 typedef pair<int, int> pi;
 typedef pair<double, double> pd;
-typedef pair<li, li> pli;
 typedef pair<ll, ll> pll;
-typedef pair<ld, ld> pld;
 typedef vec<int> vi;
 typedef vec<li> vli;
 typedef vec<ll> vll;
@@ -45,15 +43,29 @@ template<typename T> istream &operator>>(istream &stream, vector<T> &vector) { f
 template<typename T> istream &operator>>(istream &stream, T array[]) { for (auto &x: array) cin >> x; return stream; }
 // @formatter:on
 
-void solve() {
+map<ll, vec<ll>> mp; // difference -> all squares who are that much greater than another square
 
+void solve() {
+    rep(i, 1, 1000) {
+        ll sq_i = i * i;
+        rep(j, 1, i) {
+            ll diff = sq_i - j * j;
+            if (mp.find(diff) == mp.end()) mp[diff] = vec<ll>();
+            mp[diff].push_back(i);
+        }
+    }
+
+    ll x;
+    cin >> x;
+    if (mp.find(x) == mp.end()) mp[x] = vec<ll>();
+    cout << mp[x].size() << endl;
+    travis(sq, mp[x]) cout << sq << " ";
+    cout << endl;
 }
 
 int main() {
     ios::sync_with_stdio(false); // Makes io faster, desyncs c-style io (no scanf/printf)
     //cin.tie(nullptr); // Unties cin from cout (don't do this if you alternate input/output)
 
-    int tests;
-    cin >> tests;
-    while (tests--) solve();
+    solve();
 }
