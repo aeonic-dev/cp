@@ -11,6 +11,8 @@ using namespace std;
 #define vec vector
 #define pb push_back
 #define eb emplace_back
+#define uset unordered_set
+#define umap unordered_map
 
 // Type aliases
 typedef long int li;
