@@ -3,11 +3,11 @@ template<typename n_t>
 struct pt {
     n_t x, y;
 
-    pt() : x(0), y(0) {
+    pt() : pt(0, 0) {}
+
+    pt(n_t x, n_t y) : x(x), y(y) {
         static_assert(std::is_arithmetic<n_t>::value, "value type must be numeric");
     }
-
-    pt(n_t x, n_t y) : x(x), y(y) {}
 
     static pt polar(n_t theta, n_t r) {
         return {r * cos(theta), r * sin(theta)};
@@ -23,20 +23,20 @@ struct pt {
         return out;
     }
 
-    pt operator+(pt u) const {
-        return {x + u.x, y + u.y};
+    pt operator+(const pt &r) const {
+        return {x + r.x, y + r.y};
     }
 
-    pt operator-(pt u) const {
-        return {x - u.x, y - u.y};
+    pt operator-(const pt &r) const {
+        return {x - r.x, y - r.y};
     }
 
-    pt operator*(n_t d) const {
-        return {x * d, y * d};
+    pt operator*(n_t r) const {
+        return {x * r, y * r};
     }
 
-    pt operator/(n_t d) const {
-        return {x / d, y / d};
+    pt operator/(n_t r) const {
+        return {x / r, y / r};
     }
 
     bool operator==(const pt &u) const {
