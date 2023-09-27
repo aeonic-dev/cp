@@ -45,6 +45,7 @@ template<typename A, typename B> istream &operator>>(istream &stream, pair<A, B>
 template<typename A, typename B> ostream &operator<<(ostream &stream, const pair<A, B> &pair) { return stream << "(" << pair.first << ", " << pair.second << ")"; }
 template<typename T> istream &operator>>(istream &stream, vector<T> &vector) { for (auto &x: vector) cin >> x; return stream; }
 template<typename T> istream &operator>>(istream &stream, T array[]) { for (auto &x: array) cin >> x; return stream; }
+template<typename T> class ipq : public priority_queue<T, vector<T>, greater<T>> {};
 // @formatter:on
 
 void solve() {
