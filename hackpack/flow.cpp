@@ -17,7 +17,7 @@ struct ffa {
         if (bidirectional) residual[v][u] += capacity;
     }
 
-    // Find augmenting paths in the network
+    // Finds augmenting paths in the network
     f_t dfs(n_t cur, n_t t, f_t flow) {
         if (cur == t) return flow;
 
