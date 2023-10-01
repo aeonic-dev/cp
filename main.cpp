@@ -46,11 +46,16 @@ void solve() {
 
 }
 
+#define MULTIPLE_CASES 1
 int main() {
     ios::sync_with_stdio(false); // Makes io faster, desyncs c-style io (no scanf/printf)
     //cin.tie(nullptr); // Unties cin from cout (don't do this if you alternate input/output)
 
+#if MULTIPLE_CASES
     int tests;
     cin >> tests;
     while (tests--) solve();
+#else
+    solve();
+#endif
 }

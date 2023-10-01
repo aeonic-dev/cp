@@ -99,7 +99,7 @@ struct pt {
         return unit() * dot(u) / mag();
     }
 
-    // Gets the unit vectors perpendicular to this one
+    // Gets the unit vectors perpendicular to this vector
     std::pair <pt, pt> perp() const {
         n_t m = mag();
         return {{y / m,  -x / m},

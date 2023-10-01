@@ -1,7 +1,13 @@
 template<typename n_t>
-int lcm(n_t a, n_t b) {
+n_t gcd(n_t a, n_t b) {
+    if (b == 0) return a;
+    return gcd(b, a % b);
+}
+
+template<typename n_t>
+n_t lcm(n_t a, n_t b) {
     if (a == 0 || b == 0) return 0;
-    return a * b / __gcd(a, b);
+    return a * b / gcd(a, b);
 }
 
 template<typename n_t>
@@ -37,9 +43,9 @@ struct frac {
 
     // Returns the fraction in lowest terms
     frac lowest() const {
-        int num = d < 0 ? -n : n;
-        int den = d < 0 ? -d : d;
-        return {num / __gcd(num, den), den / __gcd(num, den)};
+        n_t num = d < 0 ? -n : n;
+        n_t den = d < 0 ? -d : d;
+        return {num / gcd(num, den), den / gcd(num, den)};
     }
 
     frac operator+(const frac &r) const {
@@ -62,6 +68,15 @@ struct frac {
 
     frac operator/(const frac &r) const {
         return {n * r.d, d * r.n};
+    }
+
+    bool operator==(const frac &r) const {
+        if (d == r.d) return n == r.n;
+        return n * r.d == r.n * d;
+    }
+
+    bool is_zero() const {
+        return n == 0;
     }
 };
 

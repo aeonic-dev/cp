@@ -42,7 +42,7 @@ typedef vec<string> vs;
 // Misc templates
 // @formatter:off
 template<typename A, typename B> istream &operator>>(istream &stream, pair<A, B> &pair) { stream >> pair.first >> pair.second; return stream; }
-template<typename A, typename B> ostream &operator<<(ostream &stream, const pair<A, B> &pair) { return stream << "(" << pair.first << ", " << pair.second << ")"; }
+template<typename A, typename B> ostream &operator<<(ostream &stream, const pair<A, B> &pair) { return stream << pair.first << " " << pair.second; }
 template<typename T> istream &operator>>(istream &stream, vector<T> &vector) { for (auto &x: vector) cin >> x; return stream; }
 template<typename T> istream &operator>>(istream &stream, T array[]) { for (auto &x: array) cin >> x; return stream; }
 template<typename T> class ipq : public priority_queue<T, vector<T>, greater<T>> {};
@@ -52,11 +52,16 @@ void solve() {
 
 }
 
+#define MULTIPLE_CASES 1
 int main() {
     ios::sync_with_stdio(false); // Makes io faster, desyncs c-style io (no scanf/printf)
     //cin.tie(nullptr); // Unties cin from cout (don't do this if you alternate input/output)
 
+#if MULTIPLE_CASES
     int tests;
     cin >> tests;
     while (tests--) solve();
+#else
+    solve();
+#endif
 }
