@@ -11,6 +11,8 @@ using namespace std;
 #define vec vector
 #define pb push_back
 #define eb emplace_back
+#define uset unordered_set
+#define umap unordered_map
 
 // Type aliases
 typedef long int li;
@@ -18,7 +20,10 @@ typedef long long ll;
 typedef long double ld;
 typedef unsigned char byte;
 typedef pair<int, int> pi;
+typedef pair<double, double> pd;
+typedef pair<li, li> pli;
 typedef pair<ll, ll> pll;
+typedef pair<ld, ld> pld;
 typedef vec<int> vi;
 typedef vec<li> vli;
 typedef vec<ll> vll;
@@ -33,13 +38,16 @@ typedef vec<string> vs;
 #define travis(x, s) for (auto &x: s)
 #define integral(return_type) template<typename T> typename enable_if<is_integral<T>::value, return_type>::type
 #define numeric(return_type) template<typename T> typename enable_if<is_arithmetic<T>::value, return_type>::type
+#define gin(type) get_cin<type>()
 
 // Misc templates
 // @formatter:off
 template<typename A, typename B> istream &operator>>(istream &stream, pair<A, B> &pair) { stream >> pair.first >> pair.second; return stream; }
-template<typename A, typename B> ostream &operator<<(ostream &stream, const pair<A, B> &pair) { return stream << "(" << pair.first << ", " << pair.second << ")"; }
+template<typename A, typename B> ostream &operator<<(ostream &stream, const pair<A, B> &pair) { return stream << pair.first << " " << pair.second; }
 template<typename T> istream &operator>>(istream &stream, vector<T> &vector) { for (auto &x: vector) cin >> x; return stream; }
 template<typename T> istream &operator>>(istream &stream, T array[]) { for (auto &x: array) cin >> x; return stream; }
+template<typename T> class ipq : public priority_queue<T, vector<T>, greater<T>> {};
+template<typename T> T get_cin() { T t; cin >> t; return t; }
 // @formatter:on
 
 void solve() {
