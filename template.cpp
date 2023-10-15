@@ -36,8 +36,6 @@ typedef vec<string> vs;
 #define rep(i, a, b) for (int i = a; i < b; i++)
 #define rev(i, a, b) for (int i = a; i > b; i--)
 #define travis(x, s) for (auto &x: s)
-#define integral(return_type) template<typename T> typename enable_if<is_integral<T>::value, return_type>::type
-#define numeric(return_type) template<typename T> typename enable_if<is_arithmetic<T>::value, return_type>::type
 #define gin(type) get_cin<type>()
 
 // Misc templates
@@ -58,7 +56,6 @@ void solve() {
 int main() {
     ios::sync_with_stdio(false); // Makes io faster, desyncs c-style io (no scanf/printf)
     //cin.tie(nullptr); // Unties cin from cout (don't do this if you alternate input/output)
-
 #if MULTIPLE_CASES
     int tests;
     cin >> tests;
