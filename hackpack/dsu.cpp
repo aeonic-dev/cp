@@ -3,10 +3,6 @@ struct dsu {
 
     dsu(int n): par(n, -1) {}
 
-    int find(int s) {
-        return par[s] < 0 ? s : par[s] = find(par[s]);
-    }
-
     bool join(int a, int b) {
         a = find(a), b = find(b);
         if (a == b) return false;
@@ -16,5 +12,15 @@ struct dsu {
         par[b] = a;
 
         return true;
+    }
+
+    int find(int s) {
+        return par[s] < 0 ? s : par[s] = find(par[s]);
+    }
+
+    int count() {
+        int num = 0;
+        for (auto &p: par) num += p < 0;
+        return num;
     }
 };
