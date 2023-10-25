@@ -250,8 +250,8 @@ int main() {
     ios::sync_with_stdio(false); // makes io faster, desyncs c-style io (no scanf/printf)
 //    cin.tie(nullptr); // unties cin from cout (don't do this if you alternate input/output)
 
-    solve();
-//    int tests;
-//    cin >> tests;
-//    while (tests--) solve();
+//    solve();
+    int tests;
+    cin >> tests;
+    while (tests--) solve();
 }
