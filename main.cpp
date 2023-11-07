@@ -10,7 +10,6 @@ typedef pair<int, int> pii;
 typedef vector<int> vi;
 
 void solve() {
-
 }
 
 int main() {
@@ -18,9 +17,8 @@ int main() {
     cin.exceptions(cin.failbit);
 
     int t = 1;
-//    cin >> t; // Uncomment for single test case
+//    cin >> t; // Uncomment for multiple cases
     while (t--) solve();
-    solve();
 
     return 0;
 }
