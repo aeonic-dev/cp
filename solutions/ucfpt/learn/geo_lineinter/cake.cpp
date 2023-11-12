@@ -64,58 +64,79 @@ struct Point {
     }
 };
 
+template<class P>
+pair<int, P> lineInter(P s1, P e1, P s2, P e2) {
+    auto d = (e1 - s1).cross(e2 - s2);
+    if (d == 0) // if parallel
+        return {-(s1.cross(e1, s2) == 0), P(0, 0)};
+    auto p = s2.cross(e1, e2), q = s2.cross(e2, s1);
+    return {1, (s1 * p + e1 * q) / d};
+}
+
 typedef Point<ld> P;
 
-pair<P, P> get_h_g(P A, P B, P C, ld v) {
-    P H = A + (C - A) * v;
-    return {H, B + (H - A)};
-}
-
-ld round3(ld n) {
-    return round(n * 1000) / 1000;
-}
-
 void solve() {
-    while (true) {
-        P A, B, C, D, E, F;
-        cin >>
-            A.x >> A.y >>
-            B.x >> B.y >>
-            C.x >> C.y >>
-            D.x >> D.y >>
-            E.x >> E.y >>
-            F.x >> F.y;
+    int n, y;
+    cin >> n >> y;
 
-        if (!(A.x != 0 || A.y != 0 ||
-              B.x != 0 || B.y != 0 ||
-              C.x != 0 || C.y != 0 ||
-              D.x != 0 || D.y != 0 ||
-              E.x != 0 || E.y != 0 ||
-              F.x != 0 || F.y != 0))
-            break;
+    vec<P> pts(n);
+    rep(i, 0, n) cin >> pts[i].x >> pts[i].y;
+    P s = P(-2000, y), e = P(2000, y);
 
-        // area of triangle DEF
-        ld tri = abs((E - D).cross(F - D)) / 2; // no abs?
+    P pivot;
+    vec<P> top, bot;
+    rep(i, 0, n) {
+        P a = pts[i], b = pts[(i + 1) % n];
+        (a.y < y ? bot : top).push_back(a);
 
-        // find sin(angle CAB)
-        P CA = C - A, BA = B - A;
-        ld sinth = sqrt(1 - pow(CA.dot(BA) / (CA.dist() * BA.dist()), 2));
+        // lineInter gives false positives
+        if ((a.y < y) == (b.y < y)) continue;
 
-        // H at v=0-1 along A -> C
-        ld v = tri / (A.dist(C) * A.dist(B) * sinth);
-        auto res = get_h_g(A, B, C, v);
-        auto H = res.first, G = res.second;
-
-        cout << setprecision(3) << fixed;
-        cout << round3(G.x) << " " << round3(G.y) << " " << round3(H.x) << " " << round3(H.y) << endl;
+        auto res = lineInter(s, e, a, b);
+        if (res.first == 1) {
+            pivot = res.second; // doesn't matter which we use as pivot
+            top.push_back(res.second);
+            bot.push_back(res.second);
+        }
     }
+
+    sort(all(top), [&](P a, P b) {
+        P p1 = a - pivot, p2 = b - pivot;
+        ld crs = p1.cross(p2);
+        return crs == 0 ? p1.dist() < p2.dist() : crs > 0;
+    });
+    sort(all(bot), [&](P a, P b) {
+        P p1 = a - pivot, p2 = b - pivot;
+        ld crs = p1.cross(p2);
+        return crs == 0 ? p1.dist() < p2.dist() : crs > 0;
+    });
+
+    ld pt = 0, pb = 0;
+    rep(i, 0, top.size()) {
+        P a = top[i], b = top[(i + 1) % top.size()];
+        pt += a.dist(b);
+    }
+
+    rep(i, 0, bot.size()) {
+        P a = bot[i], b = bot[(i + 1) % bot.size()];
+        pb += a.dist(b);
+    }
+
+    if (pt > pb) swap(pt, pb);
+    cout << pt << " " << pb << "\n\n";
 }
 
 int main() {
     cin.tie(0)->sync_with_stdio(0);
     cin.exceptions(cin.failbit);
 
-    solve();
+    int t;
+    cin >> t;
+    cout << setprecision(3) << fixed;
+    rep(i, 0, t) {
+        cout << "Case #" << i + 1 << ": ";
+        solve();
+    }
 
     return 0;
 }

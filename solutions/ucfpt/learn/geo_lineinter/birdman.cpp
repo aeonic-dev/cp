@@ -64,58 +64,45 @@ struct Point {
     }
 };
 
+template<class P>
+bool onSegment(P s, P e, P p) {
+    return p.cross(s, e) == 0 && (s - p).dot(e - p) <= 0;
+}
+
+template<class P>
+vector<P> segInter(P a, P b, P c, P d) {
+    auto oa = c.cross(d, a), ob = c.cross(d, b),
+            oc = a.cross(b, c), od = a.cross(b, d);
+    // Checks if intersection is single non-endpoint point.
+    if (sgn(oa) * sgn(ob) < 0 && sgn(oc) * sgn(od) < 0)
+        return {(a * ob - b * oa) / (ob - oa)};
+    set<P> s;
+    if (onSegment(c, d, a)) s.insert(a);
+    if (onSegment(c, d, b)) s.insert(b);
+    if (onSegment(a, b, c)) s.insert(c);
+    if (onSegment(a, b, d)) s.insert(d);
+    return {all(s)};
+}
+
 typedef Point<ld> P;
 
-pair<P, P> get_h_g(P A, P B, P C, ld v) {
-    P H = A + (C - A) * v;
-    return {H, B + (H - A)};
-}
-
-ld round3(ld n) {
-    return round(n * 1000) / 1000;
-}
-
 void solve() {
-    while (true) {
-        P A, B, C, D, E, F;
-        cin >>
-            A.x >> A.y >>
-            B.x >> B.y >>
-            C.x >> C.y >>
-            D.x >> D.y >>
-            E.x >> E.y >>
-            F.x >> F.y;
+    P b, s, p1, p2;
+    cin >> b.x >> b.y >> s.x >> s.y >> p1.x >> p1.y >> p2.x >> p2.y;
 
-        if (!(A.x != 0 || A.y != 0 ||
-              B.x != 0 || B.y != 0 ||
-              C.x != 0 || C.y != 0 ||
-              D.x != 0 || D.y != 0 ||
-              E.x != 0 || E.y != 0 ||
-              F.x != 0 || F.y != 0))
-            break;
+    auto res = segInter(b, s, p1, p2);
 
-        // area of triangle DEF
-        ld tri = abs((E - D).cross(F - D)) / 2; // no abs?
-
-        // find sin(angle CAB)
-        P CA = C - A, BA = B - A;
-        ld sinth = sqrt(1 - pow(CA.dot(BA) / (CA.dist() * BA.dist()), 2));
-
-        // H at v=0-1 along A -> C
-        ld v = tri / (A.dist(C) * A.dist(B) * sinth);
-        auto res = get_h_g(A, B, C, v);
-        auto H = res.first, G = res.second;
-
-        cout << setprecision(3) << fixed;
-        cout << round3(G.x) << " " << round3(G.y) << " " << round3(H.x) << " " << round3(H.y) << endl;
-    }
+    if (!res.empty()) cout << "Move to the left or right!\n";
+    else cout << "Good picture, Birdman!\n";
 }
 
 int main() {
     cin.tie(0)->sync_with_stdio(0);
     cin.exceptions(cin.failbit);
 
-    solve();
+    int t;
+    cin >> t;
+    while (t--) solve();
 
     return 0;
 }

@@ -64,50 +64,58 @@ struct Point {
     }
 };
 
-typedef Point<ld> P;
-
-pair<P, P> get_h_g(P A, P B, P C, ld v) {
-    P H = A + (C - A) * v;
-    return {H, B + (H - A)};
+template<class P>
+P lineProj(P a, P b, P p, bool refl = false) {
+    P v = b - a;
+    return p - v.perp() * (1 + refl) * v.cross(p - a) / v.dist2();
 }
 
-ld round3(ld n) {
-    return round(n * 1000) / 1000;
+typedef Point<ld> P;
+
+ld segDist(P &s, P &e, P &p) {
+    if (s == e) return (p - s).dist();
+    auto d = (e - s).dist2(), t = min(d, max((ld) 0, (p - s).dot(e - s)));
+    return ((p - s) * d - (e - s) * t).dist() / d;
 }
 
 void solve() {
-    while (true) {
-        P A, B, C, D, E, F;
-        cin >>
-            A.x >> A.y >>
-            B.x >> B.y >>
-            C.x >> C.y >>
-            D.x >> D.y >>
-            E.x >> E.y >>
-            F.x >> F.y;
+    P A, B, C;
+    cin >> A.x >> A.y >> B.x >> B.y >> C.x >> C.y;
 
-        if (!(A.x != 0 || A.y != 0 ||
-              B.x != 0 || B.y != 0 ||
-              C.x != 0 || C.y != 0 ||
-              D.x != 0 || D.y != 0 ||
-              E.x != 0 || E.y != 0 ||
-              F.x != 0 || F.y != 0))
-            break;
+    // AB will = hypotenuse
+    ld AB = A.dist(B), BC = B.dist(C), AC = A.dist(C);
+    ld max = ::max(AB, ::max(BC, AC));
+    if (max == BC) {
+        swap(A, B);
+        swap(B, C);
+        swap(AB, BC);
+        swap(BC, AC);
+    } else if (max == AC) {
+        swap(B, C);
+        swap(AB, AC);
+    }
 
-        // area of triangle DEF
-        ld tri = abs((E - D).cross(F - D)) / 2; // no abs?
+    P M = lineProj(A, B, C); // point on AB projected down from C
+    ld h = segDist(A, B, C); // height
+    ld AM = A.dist(M), BM = B.dist(M); // split base lengths
 
-        // find sin(angle CAB)
-        P CA = C - A, BA = B - A;
-        ld sinth = sqrt(1 - pow(CA.dot(BA) / (CA.dist() * BA.dist()), 2));
+    // if m is centered, that's our balance point
+    if (abs(AM - BM) < 1e-6) {
+        cout << M << endl;
+        return;
+    }
 
-        // H at v=0-1 along A -> C
-        ld v = tri / (A.dist(C) * A.dist(B) * sinth);
-        auto res = get_h_g(A, B, C, v);
-        auto H = res.first, G = res.second;
+    ld left = AM * h / 2;
+    ld right = BM * h / 2;
 
-        cout << setprecision(3) << fixed;
-        cout << round3(G.x) << " " << round3(G.y) << " " << round3(H.x) << " " << round3(H.y) << endl;
+    if (AM > BM) {
+        // balance point is on the left side
+        ld v = sqrt((right + left) / (2 * left)); // 0-1 A -> M
+        cout << (A + (M - A) * v) << endl;
+    } else {
+        // balance point is on the right side
+        ld v = sqrt((right + left) / (2 * right)); // 0-1 B -> M
+        cout << (B + (M - B) * v) << endl;
     }
 }
 
@@ -115,7 +123,13 @@ int main() {
     cin.tie(0)->sync_with_stdio(0);
     cin.exceptions(cin.failbit);
 
-    solve();
+    int t;
+    cin >> t;
+    cout << setprecision(2) << fixed;
+    rep(i, 0, t) {
+        cout << "Triangle #" << i + 1 << " Balance Point: ";
+        solve();
+    }
 
     return 0;
 }

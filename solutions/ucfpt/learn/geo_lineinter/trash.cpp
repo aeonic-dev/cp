@@ -2,10 +2,10 @@
 
 using namespace std;
 
-#define vec vector
 #define rep(i, a, b) for(int i = a; i < (b); ++i)
 #define all(x) begin(x), end(x)
 #define sz(x) (int)(x).size()
+#define vec vector
 typedef long long ll;
 typedef long double ld;
 typedef pair<int, int> pii;
@@ -43,10 +43,6 @@ struct Point {
 
     double dist() const { return sqrt((double) dist2()); }
 
-    double dist(P p) const {
-        return (p - *this).dist();
-    }
-
     // angle to x-axis in interval [-pi, pi]
     double angle() const { return atan2(y, x); }
 
@@ -64,50 +60,53 @@ struct Point {
     }
 };
 
+template<class P>
+ld lineDist(const P &a, const P &b, const P &p) {
+    return (ld) (b - a).cross(p - a) / (b - a).dist();
+}
+
+typedef long double ld;
 typedef Point<ld> P;
 
-pair<P, P> get_h_g(P A, P B, P C, ld v) {
-    P H = A + (C - A) * v;
-    return {H, B + (H - A)};
+vector<P> convexHull(vector<P> pts) {
+    if (sz(pts) <= 1) return pts;
+    sort(all(pts));
+    vector<P> h(sz(pts) + 1);
+    int s = 0, t = 0;
+    for (int it = 2; it--; s = --t, reverse(all(pts)))
+        for (P p: pts) {
+            while (t >= s + 2 && h[t - 2].cross(h[t - 1], p) <= 0) t--;
+            h[t++] = p;
+        }
+    return {h.begin(), h.begin() + t - (t == 2 && h[0] == h[1])};
 }
 
-ld round3(ld n) {
-    return round(n * 1000) / 1000;
-}
-
+int tc = 1;
 void solve() {
     while (true) {
-        P A, B, C, D, E, F;
-        cin >>
-            A.x >> A.y >>
-            B.x >> B.y >>
-            C.x >> C.y >>
-            D.x >> D.y >>
-            E.x >> E.y >>
-            F.x >> F.y;
+        int n;
+        cin >> n;
 
-        if (!(A.x != 0 || A.y != 0 ||
-              B.x != 0 || B.y != 0 ||
-              C.x != 0 || C.y != 0 ||
-              D.x != 0 || D.y != 0 ||
-              E.x != 0 || E.y != 0 ||
-              F.x != 0 || F.y != 0))
-            break;
+        if (n == 0) return;
 
-        // area of triangle DEF
-        ld tri = abs((E - D).cross(F - D)) / 2; // no abs?
+        vec<P> pts(n);
+        rep(i, 0, n) cin >> pts[i].x >> pts[i].y;
 
-        // find sin(angle CAB)
-        P CA = C - A, BA = B - A;
-        ld sinth = sqrt(1 - pow(CA.dot(BA) / (CA.dist() * BA.dist()), 2));
+        auto hull = convexHull(pts);
+        ld min_dist = LDBL_MAX;
+        rep(i, 0, hull.size()) {
+            P a = hull[i], b = hull[(i + 1) % hull.size()];
+            ld max_dist = LDBL_MIN;
+            rep(j, 0, hull.size()) {
+                if (j == i || j == (i + 1) % hull.size()) continue;
+                max_dist = max(max_dist, lineDist(a, b, hull[j]));
+            }
 
-        // H at v=0-1 along A -> C
-        ld v = tri / (A.dist(C) * A.dist(B) * sinth);
-        auto res = get_h_g(A, B, C, v);
-        auto H = res.first, G = res.second;
+            min_dist = min(min_dist, max_dist);
+        }
 
-        cout << setprecision(3) << fixed;
-        cout << round3(G.x) << " " << round3(G.y) << " " << round3(H.x) << " " << round3(H.y) << endl;
+        cout << setprecision(2) << fixed;
+        cout << "Case " << tc++ << ": " << ceil(min_dist * 100) / 100 << endl;
     }
 }
 
@@ -115,7 +114,9 @@ int main() {
     cin.tie(0)->sync_with_stdio(0);
     cin.exceptions(cin.failbit);
 
-    solve();
+    int t = 1;
+//    cin >> t; // Uncomment for multiple cases
+    while (t--) solve();
 
     return 0;
 }
