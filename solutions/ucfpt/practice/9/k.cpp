@@ -80,56 +80,17 @@ struct Point {
     }
 };
 
-template<class P>
-bool onSegment(P s, P e, P p, ld eps = 1e-6) {
-    return (abs(p.cross(s, e)) < eps && (s - p).dot(e - p) <= 0 + eps);
-}
-
-template<class P>
-vec<P> segInter(P a, P b, P c, P d) {
-    auto oa = c.cross(d, a), ob = c.cross(d, b),
-            oc = a.cross(b, c), od = a.cross(b, d);
-    // checks if inter is single non-endpoint
-    if (sgn(oa) * sgn(ob) < 0 && sgn(oc) * sgn(od) < 0) {
-        return {(a * ob - b * oa) / (ob - oa)};
-    }
-    set<P> s;
-    if (onSegment(c, d, a)) s.insert(a);
-    if (onSegment(c, d, b)) s.insert(b);
-    if (onSegment(a, b, c)) s.insert(c);
-    if (onSegment(a, b, d)) s.insert(d);
-    return {all(s)};
-}
-
 typedef Point<ld> P;
-map<ld, P> pos_dp[2];
-
 const ld eps = 1e-6;
 
 void solve() {
-    int n;
-    cin >> n;
+    int n; cin >> n;
     vec<P> pn(n);
-    vec<ld> pxn(n, 0);
-    rep(i, 0, n) {
-        cin >> pn[i].x >> pn[i].y;
-        if (i > 0) {
-            pxn[i] = pxn[i - 1] + pn[i].dist(pn[i - 1]);
-        }
-    }
-    ld tdn = pxn[n - 1]; // total distance on the n path
+    rep(i, 0, n) cin >> pn[i].x >> pn[i].y;
 
-    int m;
-    cin >> m;
+    int m; cin >> m;
     vec<P> pm(m);
-    vec<ld> pxm(m, 0);
-    rep(i, 0, m) {
-        cin >> pm[i].x >> pm[i].y;
-        if (i > 0) {
-            pxm[i] = pxm[i - 1] + pm[i].dist(pm[i - 1]);
-        }
-    }
-    ld tdm = pxm[m - 1]; // total distance on the m path
+    rep(i, 0, m) cin >> pm[i].x >> pm[i].y;
 
     auto lerp = [&](P &a, P &b, ld f) {
         return a + (b - a) * f;
@@ -166,7 +127,6 @@ void solve() {
         }
 
         ld res = find_min(on, cn, om, cm);
-//        cout << res << endl;
         min = ::min(min, res);
     }
 
