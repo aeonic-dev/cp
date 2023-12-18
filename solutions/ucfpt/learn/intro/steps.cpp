@@ -1,5 +1,4 @@
 #include <bits/stdc++.h>
-
 using namespace std;
 
 #define rep(i, a, b) for(int i = a; i < (b); ++i)
@@ -14,7 +13,7 @@ typedef vector<int> vi;
 void solve() {
     int n;
     cin >> n;
-    vec<vec<int>> adj(n, vec<int>(n, INT_MAX));
+    vec<vec<int>> adj(n, vec<int>(n));
     rep(i, 0, n) {
         rep(j, 0, n) {
             cin >> adj[i][j];
@@ -28,14 +27,19 @@ void solve() {
         cin >> s;
 
         ll steps = 0;
-        rep(j, 1, s.size()) steps += adj[s[j - 1] - 'A'][s[j] - 'A'];
-        cout << steps << endl;
+        int last = s[0] - 'A';
+        rep(j, 1, s.size()) {
+            int cur = s[j] - 'A';
+            steps += adj[last][cur];
+            last = cur;
+        }
+        cout << steps << "\n";
     }
 }
 
 int main() {
-    cin.tie(0)->sync_with_stdio(0);
-    cin.exceptions(cin.failbit);
+//    cin.tie(0)->sync_with_stdio(0);
+//    cin.exceptions(cin.failbit);
 
     int t = 1;
 //    cin >> t; // uncomment for multiple cases

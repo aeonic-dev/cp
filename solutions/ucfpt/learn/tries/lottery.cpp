@@ -1,164 +1,94 @@
-// settings
-#pragma GCC optimize("O3")
-#pragma GCC optimize("unroll-loops")
-#pragma ide diagnostic ignored "OCUnusedMacroInspection"
-
 #include <bits/stdc++.h>
 
 using namespace std;
 
-// primitive types
-typedef long long ll;
-typedef long int li;
-
-// aliases
+#define rep(i, a, b) for(int i = a; i < (b); ++i)
+#define all(x) begin(x), end(x)
+#define sz(x) (int)(x).size()
 #define vec vector
-typedef pair<int, int> pi;
-typedef pair<ll, ll> pll;
-typedef vec<int> vi;
-typedef vec<li> vli;
-typedef vec<ll> vll;
-typedef vec<pi> vpi;
-typedef vec<string> vs;
+typedef long long ll;
+typedef long double ld;
+typedef pair<int, int> pii;
+typedef vector<int> vi;
 
-// meta macros
-#define GET_MACRO(_1, _2, _3, _4, _5, _6, _7, _8, NAME, ...) NAME
-#define THANKS void GIVE_ME_A_SEMICOLON() // requires semicolon when calling a macro
+struct node {
+    node *children[26]{};
+    int paths = 0, words = 0;
 
-// more aliases
-#define pb push_back
-#define eb emplace_back
-#define mp make_pair
+    ~node() { for (auto ch: children) delete ch; }
 
-// other macros
-#define all(x) x.begin(), x.end()
-#define rall(x) x.rbegin(), x.rend()
-#define rep(i, a, b) for (int i = a; i < b; i++)
-#define rev(i, a, b) for (int i = a; i > b; i--)
+    void add(string &s, int idx = 0) {
+        paths++;
+        if (idx == s.size()) return void(words++);
 
-// templates
-// @formatter:off
-template<typename A, typename B> ostream &operator<<(ostream &stream, const pair<A, B> &pair) { return stream << "(" << pair.first << ", " << pair.second << ")"; }
-// @formatter:on
-
-namespace trie {
-    struct node {
-        node *children[26]{};
-        bool is_valid_word;
-        int valid_paths;
-
-        node() : is_valid_word(false), valid_paths(0) {}
-
-        ~node() {
-            for (int i = 0; i < 26; i++) delete children[i];
+        int i = s[idx] - 'a';
+        if (children[i] == nullptr) {
+            children[i] = new node();
         }
 
-    public:
-        void add(string s) {
-            node *cur = this;
+        children[i]->add(s, idx + 1);
+    }
 
-            for (int i = 0; i < s.size(); i++) {
-                cur->valid_paths++;
-                if (cur->children[s[i] - 'a'] == nullptr) cur->children[s[i] - 'a'] = new node();
-                cur = cur->children[s[i] - 'a'];
+    ll num(string &pfx, int idx = 0) {
+        if (idx >= pfx.size()) {
+            ll res = words;
+            for (auto ch: children) {
+                if (ch == nullptr) continue;
+                res += ch->num(pfx, idx + 1);
             }
-
-            cur->valid_paths++;
-            cur->is_valid_word = true;
+            return res;
         }
 
-        int count_prefix(string s) {
-            node *cur = this;
-
-            for (int i = 0; i < s.size(); i++) {
-                if (cur->children[s[i] - 'a'] == nullptr) return 0;
-                cur = cur->children[s[i] - 'a'];
-            }
-
-            return cur->valid_paths;
-        }
-
-        int count_pairs() {
-            if (valid_paths < 2) return 0;
-            if (valid_paths == 2) return 1;
-
-            int num = 0;
-            for (int i = 0; i < 26; i++) {
-                if (children[i] != nullptr) num += children[i]->count_pairs();
-            }
-
-            return num;
-        }
-    };
-
-    class string_trie {
-        node *root;
-
-    public:
-        string_trie() : root(new node()) {}
-
-        ~string_trie() {
-            delete root;
-        }
-
-        void add(string s) {
-            root->add(s);
-        }
-
-        int count_prefix(string s) {
-            return root->count_prefix(s);
-        }
-
-        void flip() {
-            node *new_root = new node();
-
-        }
-    };
-}
-
-using namespace trie;
-
-int n = 0;
+        int i = pfx[idx] - 'a';
+        if (children[i] == nullptr) return 0;
+        return children[i]->num(pfx, idx + 1);
+    }
+};
 
 void solve() {
-    int q, t;
+    int q;
     cin >> q;
 
-    cout << "Lottery #" << ++n << ":\n";
-
-    bool flipped = false;
-    string s;
-    string_trie forw, back;
+    bool rev = false;
+    node *fw = new node();
+    node *bw = new node();
 
     rep(i, 0, q) {
+        int t;
         cin >> t;
+
+        string s, r;
         switch (t) {
-            case 1:
+            case 1: // add participant
                 cin >> s;
-
-                (flipped ? back : forw).add(s);
-                reverse(all(s));
-                (flipped ? forw : back).add(s);
-
+                r = s; reverse(all(r));
+                fw->add(s), bw->add(r);
                 break;
-            case 2:
+
+            case 2: // # of winners
                 cin >> s;
-                cout << (flipped ? back : forw).count_prefix(s) << endl;
+                cout << fw->num(s) << "\n";
                 break;
-            case 3:
-                flipped = !flipped;
+
+            default:
+            case 3: // reverse names
+                swap(fw, bw);
                 break;
         }
     }
-
-    cout << endl;
 }
 
 int main() {
-    ios::sync_with_stdio(false); // makes io faster, desyncs c-style io (no scanf/printf)
-    cin.tie(nullptr); // unties cin from cout (don't do this if you alternate input/milk_time)
+    cin.tie(0)->sync_with_stdio(0);
+    cin.exceptions(cin.failbit);
 
-    int tests;
-    cin >> tests;
-    while (tests--) solve();
+    int t = 1;
+    cin >> t; // uncomment for multiple cases
+    rep(i, 0, t) {
+        cout << "Lottery #" << i + 1 << ":\n";
+        solve();
+        cout << "\n";
+    }
+
+    return 0;
 }
