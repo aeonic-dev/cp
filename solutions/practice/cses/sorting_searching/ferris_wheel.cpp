@@ -11,28 +11,26 @@ typedef long double ld;
 void solve() {
     int n, x;
     cin >> n >> x;
-    vec<int> s(n), ind(n);
-    rep(i, 0, n) {
-        cin >> s[i];
-        ind[i] = i;
-    }
-    sort(all(ind), [&](int i, int j) {
-        return s[i] < s[j];
-    });
+    vec<int> p(n);
+    rep(i, 0, n) cin >> p[i];
+    sort(p.rbegin(), p.rend());
 
-    int l = 0, r = n - 1;
-    while (l < r) {
-        int sum = s[ind[l]] + s[ind[r]];
-        if (sum == x) {
-            cout << ind[l] + 1 << " " << ind[r] + 1 << "\n";
-            return;
+    multiset<int, greater<int>> s;
+    int filled = 0;
+    rep(i, 0, n) {
+        int num = p[i], dif = x - num;
+        auto it = s.lower_bound(dif);
+        if (it == s.end()) {
+            s.insert(num);
+            continue;
         }
 
-        if (sum < x) l++;
-        else r--;
+        int old = *it;
+        s.erase(it);
+        filled++;
     }
 
-    cout << "IMPOSSIBLE\n";
+    cout << s.size() + filled;
 }
 
 int main() {

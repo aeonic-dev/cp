@@ -10,15 +10,26 @@ typedef long long ll;
 typedef long double ld;
 
 void solve() {
-    int n, x;
+    int n;
     cin >> n;
 
-    unordered_set<int> s;
-    size_t max = 0;
-    rep(i, 0, n) {
-        cin >> x;
-        if (s.count(x)) s.clear();
-        s.insert(x);
+    vec<int> k(n);
+    rep(i, 0, n) cin >> k[i];
+
+    set<int> s{k[0]};
+    size_t max = 1;
+    int l = 0, r = 1;
+    while (l < n && r < n) {
+        int cur = k[r++];
+        if (s.count(cur)) {
+            while (true) {
+                int rem = k[l++];
+                s.erase(rem);
+                if (rem == cur) break;
+            }
+        }
+
+        s.insert(cur);
         max = ::max(max, s.size());
     }
 

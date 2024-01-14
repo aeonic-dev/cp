@@ -9,30 +9,27 @@ typedef long long ll;
 typedef long double ld;
 
 void solve() {
-    int n, x;
-    cin >> n >> x;
-    vec<int> s(n), ind(n);
-    rep(i, 0, n) {
-        cin >> s[i];
-        ind[i] = i;
-    }
-    sort(all(ind), [&](int i, int j) {
-        return s[i] < s[j];
-    });
+    int n, m;
+    cin >> n >> m;
 
-    int l = 0, r = n - 1;
-    while (l < r) {
-        int sum = s[ind[l]] + s[ind[r]];
-        if (sum == x) {
-            cout << ind[l] + 1 << " " << ind[r] + 1 << "\n";
-            return;
+    multiset<int, greater<int>> t;
+    rep(i, 0, n) {
+        int p;
+        cin >> p, t.insert(p);
+    }
+
+    rep(i, 0, m) {
+        int mp;
+        cin >> mp;
+        auto it = t.lower_bound(mp);
+        if (it == t.end()) {
+            cout << "-1\n";
+            continue;
         }
 
-        if (sum < x) l++;
-        else r--;
+        cout << *it << "\n";
+        t.erase(it);
     }
-
-    cout << "IMPOSSIBLE\n";
 }
 
 int main() {
