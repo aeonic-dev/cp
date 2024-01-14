@@ -1,69 +1,71 @@
-namespace trie {
-    struct node {
-        node *children[26]{};
-        bool is_valid_word;
-        int valid_paths;
+struct node {
+    node *children[26]{};
+    bool is_valid_word;
+    int valid_paths;
 
-        node() : is_valid_word(false), valid_paths(0) {}
+    node() : is_valid_word(false), valid_paths(0) {}
 
-        ~node() {
-            for (int i = 0; i < 26; i++) delete children[i];
-        }
+    ~node() {
+        for (int i = 0; i < 26; i++) delete children[i];
+    }
 
-    public:
-        void add(string s) {
-            node *cur = this;
+public:
+    void add(const string &s) {
+        node *cur = this;
 
-            for (int i = 0; i < s.size(); i++) {
-                cur->valid_paths++;
-                if (cur->children[s[i] - 'a'] == nullptr) cur->children[s[i] - 'a'] = new node();
-                cur = cur->children[s[i] - 'a'];
-            }
-
+        for (int i = 0; i < s.size(); i++) {
             cur->valid_paths++;
-            cur->is_valid_word = true;
+            if (cur->children[s[i] - 'a'] == nullptr) cur->children[s[i] - 'a'] = new node();
+            cur = cur->children[s[i] - 'a'];
         }
 
-        int count_prefix(string s) {
-            node *cur = this;
+        cur->valid_paths++;
+        cur->is_valid_word = true;
+    }
 
-            for (int i = 0; i < s.size(); i++) {
-                if (cur->children[s[i] - 'a'] == nullptr) return 0;
-                cur = cur->children[s[i] - 'a'];
-            }
+    int count_prefix(const string &s) {
+        node *cur = this;
 
-            return cur->valid_paths;
+        for (int i = 0; i < s.size(); i++) {
+            if (cur->children[s[i] - 'a'] == nullptr) return 0;
+            cur = cur->children[s[i] - 'a'];
         }
 
-        int count_pairs() {
-            if (valid_paths < 2) return 0;
-            if (valid_paths == 2) return 1;
+        return cur->valid_paths;
+    }
 
-            int num = 0;
-            for (int i = 0; i < 26; i++) {
-                if (children[i] != nullptr) num += children[i]->count_pairs();
-            }
+    int count_pairs() {
+        if (valid_paths < 2) return 0;
+        if (valid_paths == 2) return 1;
 
-            return num;
-        }
-    };
-
-    class string_trie {
-        node *root;
-
-    public:
-        string_trie() : root(new node()) {}
-
-        ~string_trie() {
-            delete root;
+        int num = 0;
+        for (int i = 0; i < 26; i++) {
+            if (children[i] != nullptr) num += children[i]->count_pairs();
         }
 
-        void add(string s) {
-            root->add(s);
-        }
+        return num;
+    }
+};
 
-        int count_prefix(string s) {
-            return root->count_prefix(s);
-        }
-    };
-}
+class string_trie {
+    node *root;
+
+public:
+    string_trie() : root(new node()) {}
+
+    ~string_trie() {
+        delete root;
+    }
+
+    void add(string s) {
+        root->add(s);
+    }
+
+    int count_prefix(const string &s) {
+        return root->count_prefix(s);
+    }
+
+    bool contains(const string &s) {
+        return count_prefix(s);
+    }
+};
