@@ -32,4 +32,11 @@
 *.app
 cmake-build-debug
 cmake-build-debug-g
+
+# Misc
 .DS_Store
+.cache
+.cmake
+CMakeFiles
+CMakeCache.txt
+Testing
