@@ -1,3 +1,6 @@
-[submodule "kactl"]
-	path = kactl
-	url = https://github.com/kth-competitive-programming/kactl.git
+[submodule "lrvideckis"]
+	path = lrvideckis
+	url = git@github.com:lrvideckis/programming_team_code.git
+[submodule "hackpack_apoc"]
+	path = hackpack_apoc
+	url = https://github.com/UCF-Apocalypse-Attack/hackpack.git

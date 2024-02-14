@@ -33,10 +33,14 @@
 cmake-build-debug
 cmake-build-debug-g
 
-# Misc
+# Misc / generated
 .DS_Store
 .cache
 .cmake
 CMakeFiles
 CMakeCache.txt
 Testing
+Makefile
+compile_commands.json
+cp
+*.cbp
