@@ -11,73 +11,48 @@ typedef long double ld;
 typedef pair<int, int> pii;
 typedef vector<int> vi;
 
-const ld pi = acos(-1), eps = 1e-10;
+const ld pi = acosl(-1);
+const ld eps = 1e-6;
 
 ld angle(ld a, ld b, ld s) {
-    return abs(acos(
-            (a * a + b * b - s * s) /
-            (2 * a * b)
-    ));
+    return acosl(
+            (a * a + b * b - s * s)
+            / (2 * a * b));
 }
-
-ld find(ld a, ld b, ld c, ld lo, ld hi, int d = 0) {
-    ld s = (lo + hi) / 2;
-    if (d >= 10000) return -1;
-
-    ld dif = angle(a, b, s) +
-             angle(b, c, s) +
-             angle(a, c, s) - 2 * pi;
-    if (abs(dif) < eps) return s;
-
-    if (dif > 0) return find(a, b, c, lo, s, d + 1);
-    return find(a, b, c, s, hi, d + 1);
-};
 
 void solve() {
     ld a, b, c;
     cin >> a >> b >> c;
-
-    if (a == 0) {
-        if (b == 0 || b != c) cout << "-1\n";
-        else cout << b << '\n';
-
-        return;
+    
+    ld lo = max({a, b, c});
+    ld hi = min({a + b, b + c, c + a});
+    if (hi <= lo) return void(cout << -1 << "\n");
+    
+    auto get_angle = [&](ld s) {
+        return angle(a, b, s)
+               + angle(b, c, s)
+               + angle(c, a, s);
+    };
+    
+    rep(_, 0, 100) {
+        ld md = (lo + hi) / 2.0;
+        if (get_angle(md) > 2 * pi) hi = md;
+        else lo = md;
     }
-
-    if (b == 0) {
-        if (a == 0 || a != c) cout << "-1\n";
-        else cout << a << '\n';
-
-        return;
-    }
-
-    if (c == 0) {
-        if (a == 0 || a != b) cout << "-1\n";
-        else cout << a << '\n';
-
-        return;
-    }
-
-    ld s = find(a, b, c,
-                max(abs(a - b), max(abs(b - c), abs(a - c))),
-                min(a + b, min(b + c, a + c)));
-    if (s == -1) {
-        cout << -1 << endl;
-        return;
-    }
-
-    ld res = s * s * sqrt(3) / 4;
-    cout << res << '\n';
+    ld res = hi;
+    if (get_angle(res) < 2 * pi - eps)
+        return void(cout << -1 << "\n");
+    cout << res * res * sqrtl(3) / 4 << "\n";
 }
 
 int main() {
     cin.tie(0)->sync_with_stdio(0);
     cin.exceptions(cin.failbit);
     cout << setprecision(3) << fixed;
-
+    
     int t = 1;
 //    cin >> t; // uncomment for multiple cases
     while (t--) solve();
-
+    
     return 0;
 }
