@@ -1,6 +1,6 @@
 [submodule "lrvideckis"]
-	path = lrvideckis
+	path = hackpack/lrvideckis
 	url = git@github.com:lrvideckis/programming_team_code.git
 [submodule "hackpack_apoc"]
-	path = hackpack_apoc
+	path = hackpack/kactl_apoc
 	url = https://github.com/UCF-Apocalypse-Attack/hackpack.git
