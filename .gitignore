@@ -44,3 +44,10 @@ Makefile
 compile_commands.json
 cp
 *.cbp
+
+# Debugging
+debug/data
+debug/geo.html
+**/tempCodeRunnerFile.*
+main
+main.dSYM
