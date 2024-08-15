@@ -44,6 +44,7 @@ Makefile
 compile_commands.json
 cp
 *.cbp
+**/__pycache__
 
 # Debugging
 debug/data
