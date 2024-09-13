@@ -1,11 +1,14 @@
-#!/bin/sh
-# Usage: ./test.sh file|directory [-f]
+#!/bin/zsh
+# Usage: ./test.zsh file|directory [-f] [out_extension]
 # If -f is provided, break at the first failure
+# out_extension is "ans" by default
 
 COL_RESET="\033[0m"
 COL_PASS="\033[1;32m"
 COL_FAIL="\033[1;31m"
 COL_CASE="\033[0;33m"
+
+ext_out=${3:-"ans"}
 
 case_header() {
     echo $1 | awk -F'/' "{printf \"Case $COL_CASE\" \$NF \".in$COL_RESET: \"}"
@@ -20,7 +23,7 @@ test_case() {
         ./main <$_case.in \
             | diff \
                 --color=always \
-                - $_case.ans \
+                - $_case.$ext_out \
             | tail -n +2
     )
 

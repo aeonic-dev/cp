@@ -5,35 +5,35 @@ using namespace std;
 #define all(x) begin(x), end(x)
 #define sz(x) (int)(x).size()
 typedef long long ll;
-typedef vector<int> vi;
+typedef vector<int> vi;;
 
+const int mod = 1'000'000;
 void solve() {
     int n;
     cin >> n;
-    vi a(n);
-    rep(i, 0, n) cin >> a[i];
-
-    rep(i, 0, n - 2) {
-        int d = a[i];
-        if (d == 0) continue;
-        if (d < 0) return void(cout << "no\n");
-
-        a[i] -= d, a[i + 2] -= d;
-        a[i + 1] -= d * 2;
-    }
+    map<string, int> m;
     rep(i, 0, n) {
-        if (a[i] != 0) return void(cout << "no\n");
+        string str;
+        cin >> str;
+        m[str]++;
     }
-    cout << "yes\n";
+    int max = 0;
+    map<int, vector<string>> r;
+    for (auto &[k, v] : m) {
+        r[v].push_back(k);
+        max = ::max(max, v);
+    }
+    sort(all(r[max]));
+    for (auto &str : r[max]) cout << str << "\n";
 }
 
 int main() {
     cin.tie(0)->sync_with_stdio(0);
     cin.exceptions(cin.failbit);
-
+    
     int t = 1;
-    cin >> t;
+//    cin >> t;
     while (t--) solve();
-
+    
     return 0;
 }
